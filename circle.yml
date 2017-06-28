@@ -1,0 +1,24 @@
+dependencies:
+  override:
+    - mvn -DskipTests clean install dependency:resolve-plugins dependency:go-offline
+   
+  general:
+   artifacts:
+     - $CIRCLE_TEST_REPORTS
+     - target
+
+
+deployment:
+  main:
+    branch: master
+    commands:
+      - mvn -s .circleci.settings.xml -DskipTests deploy
+      
+
+     
+test:
+  override:
+   # - mvn clean install
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
